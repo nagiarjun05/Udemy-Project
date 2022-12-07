@@ -1,6 +1,11 @@
 const path = require('path');
-
 const express = require('express');
+const cors= require('cors');
+const app = express();
+
+const dotenv=require('dotenv');
+dotenv.config();
+
 const bodyParser = require('body-parser');
 
 const User=require('./models/User');
@@ -8,9 +13,7 @@ const User=require('./models/User');
 const sequelize =require('./util/database')
 const errorController = require('./controllers/error');
 
-const cors= require('cors');
 
-const app = express();
 
 app.use(cors());
 app.set('view engine', 'ejs');
@@ -25,6 +28,9 @@ const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
 const Order = require('./models/order');
 const OrderItem = require('./models/order-item');
+// const Restaurant=require('./models/Restaurant');
+// const Review=require('./models/Review');
+// const UserReview=require('./models/res-rev-user');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
@@ -56,7 +62,9 @@ Product.belongsToMany(Cart,{through: CartItem});
 Order.belongsTo(User);
 User.hasMany(Order);
 Order.belongsToMany(Product,{through: OrderItem});
-
+// User.belongsTo(Review);
+// Restaurant.hasMany(Review)
+// Review.belongsToMany(User,{through: UserReview})
 
 sequelize
 .sync()

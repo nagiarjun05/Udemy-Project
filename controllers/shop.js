@@ -1,6 +1,7 @@
 //   products: products
 const Product = require('../models/product');
 const Cart=require('../models/cart');
+
 const ITEM_PER_PAGE=2;
 const Order=require('../models/order');
 
@@ -37,7 +38,7 @@ exports.getProducts = (req, res, next) => {
     // });
   // })
   .catch(err=>{
-    console.log(err);
+    res.status(500).json({success:false})
   })
 };
 
@@ -75,7 +76,7 @@ exports.getIndex = (req, res, next) => {
     });
   })
   .catch(err=>{
-    console.log(err);
+    res.status(500).json({success:false})
   })
 };
 
@@ -88,7 +89,9 @@ exports.getCart = (req, res, next) => {
       //   path: '/cart',
       //   pageTitle: 'Your Cart',
       });
-    }).catch(err=>console.log(err))
+    }).catch(err=>{
+      res.status(500).json({success:false})
+    })
   }
   // )
 //   .catch(err=>console.log(err));
@@ -123,9 +126,12 @@ exports.postCart=(req, res, next)=>{
     });
   })
   .then(()=>{
-    res.redirect('/cart');
+    res.status(200).json({success:true})
+    // res.redirect('/cart');
   })
-  .catch(err=>console.log(err));
+  .catch(err=>{
+    res.status(500).json({success:false})
+  });  
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
@@ -143,13 +149,17 @@ exports.postCartDeleteProduct = (req, res, next) => {
   .then(result=>{
     res.redirect('/cart');
   })
-  .catch(err=>console.log(err))    
+  .catch(err=>{
+    res.status(500).json({success:false})
+  })
 };
 
 exports.postOrder = (req, res, next) => {
+  let fetchedCart;
   req.user
   .getCart()
   .then(cart=>{
+    fetchedCart=cart;
     return cart.getProducts()
   })
   .then(products=>{
@@ -165,21 +175,29 @@ exports.postOrder = (req, res, next) => {
   })
   .then(products=>{
     res.json({products, success:true})
-    // products.forEach(element => {
-    //   let oId=element.dataValues.orderId;
-    //   res.json({oId, success:true})
-    // });
+    fetchedCart.setProducts(null)
   })
-  .catch(err=>console.log(err)) 
+  .catch(err=>{
+    res.status(500).json({success:false})
+  }) 
 }
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    path: '/orders',
-    pageTitle: 'Your Orders'
-  });
-  console.log(req.body.productId);
-  res.redirect('/cart')
+  req.user
+  .getOrders({include: ['products']})
+  .then(products=>{
+    res.json({products, success:true})
+  })
+  .catch(err=>{
+    res.status(500).json({success:false})
+  })
+  
+  // res.render('shop/orders', {
+  //   path: '/orders',
+  //   pageTitle: 'Your Orders'
+  // });
+  // console.log(req.body.productId);
+  // res.redirect('/cart')
 };
 
 exports.getCheckout = (req, res, next) => {
