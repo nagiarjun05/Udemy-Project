@@ -464,7 +464,7 @@ header .play-btn{
     margin:20px;
 }
 #about div{
-    /* display:flex; */
+    display:flex;
 }
 
 #about img{
