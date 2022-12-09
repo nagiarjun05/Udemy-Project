@@ -145,7 +145,7 @@ parent_element.addEventListener('click',(e)=>{
             setTimeout(()=>{
                 notification.remove()
             },2500);
-        }).catch(err=>{
+        }).c    atch(err=>{
             errNotify(err)
         });
     }
